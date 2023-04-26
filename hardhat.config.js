@@ -5,7 +5,7 @@ module.exports = {
   solidity: "0.8.18",
   networks: {
     mantle: {
-      url: process.env.GOERLI_URL,
+      url: process.env.MANTLE_URL,
       accounts: [process.env.PRIVATE_KEY]
     }
   },
