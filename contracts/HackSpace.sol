@@ -42,21 +42,30 @@ contract HackSpace {
         bool allowSignup;
     }
 
-    Event[] events;
+    mapping (uint256 => Event) events;
+    uint256 numEvents;
 
     constructor() {
         owner = payable(msg.sender);
+        numEvents = 0;
     }
 
     function addEvent(string memory name) external {
-        uint256 eventId = events.length;
+        uint256 eventId = numEvents + 1;
         address organizer = msg.sender;
-        Event memory e = Event(name, eventId, new Team[](0), organizer, new Award[](0), false);
-        events.push(e);
+
+        Event storage e = events[eventId];
+        e.name = name;
+        e.id = eventId;
+        e.organizer = organizer;
+        e.allowSignup = false;
+        events[eventId] = e;
+        numEvents++;
+
     }
 
     function addAward(uint256 eventId, string memory name) external payable {
-        require(eventId < events.length, "not a valid eventId");
+        require(eventId < numEvents, "not a valid eventId");
         Event storage e = events[eventId];
         uint256 awardId = e.awards.length;
         address sponsor = msg.sender;
@@ -66,7 +75,7 @@ contract HackSpace {
     }
 
     function designateAward(uint256 eventId, uint256 awardId, uint256 teamId) external {
-        require(eventId < events.length, "not a valid eventId");
+        require(eventId < numEvents, "not a valid eventId");
         Event storage e = events[eventId];
         require(awardId < e.awards.length, "not a valid awardId");
         Award storage award = e.awards[awardId];
@@ -82,7 +91,7 @@ contract HackSpace {
     }
 
     function claimAward(uint256 eventId, uint256 awardId, uint256 teamId) external {
-        require(eventId < events.length, "not a valid eventId");
+        require(eventId < numEvents, "not a valid eventId");
         Event storage e = events[eventId];
         require(awardId < e.awards.length, "not a valid awardId");
         Award storage award = e.awards[awardId];
@@ -105,16 +114,18 @@ contract HackSpace {
     }
 
     function joinEvent(uint256 eventId, string memory name) external {
-        require(eventId < events.length, "not a valid eventId");
+        require(eventId < numEvents, "not a valid eventId");
         Event storage e = events[eventId];
         uint256 teamId = e.teams.length;
-        Team memory team = Team(name, teamId, new address payable[](0));
+        Team memory team;
+        team.name = name;
+        team.id = eventId;
         e.teams.push(team);
         e.teams[teamId].members.push(payable(msg.sender));
     }
 
     function addMember(uint256 eventId, uint256 teamId, address payable member) external {
-        require(eventId < events.length, "not a valid eventId");
+        require(eventId < numEvents, "not a valid eventId");
         Event storage e = events[eventId];
         require(teamId < e.teams.length, "not a valid teamId");
         Team storage team = e.teams[teamId];
