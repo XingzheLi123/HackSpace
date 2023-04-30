@@ -87,7 +87,7 @@ contract HackSpace is ERC721, ERC721URIStorage{
     }
 
     function addAward(uint256 eventId, string memory name, string memory ipfs) external payable {
-        require(eventId < numEvents, "not a valid eventId");
+        require(eventId <= numEvents, "not a valid eventId");
         Event storage e = events[eventId];
         uint256 awardId = e.awards.length;
         address sponsor = msg.sender;
@@ -97,7 +97,7 @@ contract HackSpace is ERC721, ERC721URIStorage{
     }
 
     function designateAward(uint256 eventId, uint256 awardId, uint256 teamId) external {
-        require(eventId < numEvents, "not a valid eventId");
+        require(eventId <= numEvents, "not a valid eventId");
         Event storage e = events[eventId];
         require(awardId < e.awards.length, "not a valid awardId");
         Award storage award = e.awards[awardId];
@@ -126,7 +126,7 @@ contract HackSpace is ERC721, ERC721URIStorage{
     }*/
 
     function claimAward(uint256 eventId, uint256 awardId, uint256 teamId) external {
-        require(eventId < numEvents, "not a valid eventId");
+        require(eventId <= numEvents, "not a valid eventId");
         Event storage e = events[eventId];
         require(awardId < e.awards.length, "not a valid awardId");
         Award storage award = e.awards[awardId];
@@ -151,7 +151,7 @@ contract HackSpace is ERC721, ERC721URIStorage{
     }
 
     function joinEvent(uint256 eventId, string memory name) external {
-        require(eventId < numEvents, "not a valid eventId");
+        require(eventId <= numEvents, "not a valid eventId");
         Event storage e = events[eventId];
         uint256 teamId = e.teams.length;
         Team memory team;
@@ -162,7 +162,7 @@ contract HackSpace is ERC721, ERC721URIStorage{
     }
 
     function addMember(uint256 eventId, uint256 teamId, address payable member) external {
-        require(eventId < numEvents, "not a valid eventId");
+        require(eventId <= numEvents, "not a valid eventId");
         Event storage e = events[eventId];
         require(teamId < e.teams.length, "not a valid teamId");
         Team storage team = e.teams[teamId];
