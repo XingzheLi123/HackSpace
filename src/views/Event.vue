@@ -12,7 +12,7 @@
     <div @click="sponsor" style="cursor: pointer;" class="card card-hover">+ Sponsor an Award, enter Award Name
       <input v-model="awardName" type="text" id="award-name" required autocomplete="off" autofocus>
       <label for = 'awardName'>Prize Amount</label>
-      <input v-model="prizeAmount" type='int' id="award-name" required autocomplete="off" autofocus>
+      <input v-model="prizeAmount" type='number' id="award-name" required autocomplete="off" autofocus>
       <label for = 'awardName'>NFT URL</label>
       <input v-model="nftURL" type='text' id="award-name" required autocomplete="off" autofocus>
     </div>
@@ -55,15 +55,15 @@ export default {
     const numTeams = (await view_team_num(this.id)).toNumber();
     this.teams = [];
     for (let i = 0; i < numTeams; i++) {
-      const team = await view_team(this.id, i);
+      const team = { ...await view_team(this.id, i) };
       team.members = [];
       const numMembers = (await view_members_num(this.id, i)).toNumber();
       for (let j = 0; j < numMembers; j++) {
         const member = await view_member(this.id, i, j);
         if(member == await userAddress()){
-          isParticipant = true;
+          this.isParticipant = true;
           if(j == 0){
-            isCaptain = true;
+            this.isCaptain = true;
           }
         }
         team.members.push(member);
@@ -89,7 +89,7 @@ export default {
     },
     async sponsor() {
       //dropdown box
-      await joinEvent(this.id, this.awardName, this.prizeAmount, this.nftURL)
+      await sponsor(this.id, this.awardName, this.prizeAmount, this.nftURL)
     },
     async addMember(teamId, address) {
       // dropdown box

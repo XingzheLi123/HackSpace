@@ -156,7 +156,7 @@ contract HackSpace is ERC721, ERC721URIStorage{
         uint256 teamId = e.teams.length;
         Team memory team;
         team.name = name;
-        team.id = eventId;
+        team.id = teamId;
         e.teams.push(team);
         e.teams[teamId].members.push(payable(msg.sender));
     }
