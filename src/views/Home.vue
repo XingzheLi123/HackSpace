@@ -8,11 +8,14 @@
       Become an Organizer
     </router-link>
     <a v-if="notConnected" @click="connectWallet" class="link">Connect to Wallet</a>
+
+    <!-- <Modal title="Organize an Event" :fields="['Event name']" :action=""></Modal> -->
   </div>
 </template>
 
 <script>
 import { connect, isConnected } from '@/SCinteraction.js';
+import Modal from '@/components/Modal.vue';
 
 export default {
   name: 'Home',
