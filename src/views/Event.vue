@@ -6,30 +6,38 @@
     </h1>
     <p>Organizer: <span class="address">{{ event.organizer }}</span></p>
 
-    <div @click="join" v-if="!isParticipant" style="cursor: pointer;" class="card card-hover">+ Join as Team Captain, Enter Team Name
-      <input v-model="teamName" type="text" id="team-name" required autocomplete="off" autofocus></div>
-    <div @click="addMember" v-if="isCaptain" style="cursor: pointer;" class="card card-hover">+ Add a Team Member</div>
-    <div @click="sponsor" style="cursor: pointer;" class="card card-hover">+ Sponsor an Award, enter Award Name
-      <input v-model="awardName" type="text" id="award-name" required autocomplete="off" autofocus>
-      <label for = 'awardName'>Prize Amount</label>
-      <input v-model="prizeAmount" type='number' id="award-name" required autocomplete="off" autofocus>
-      <label for = 'awardName'>NFT URL</label>
-      <input v-model="nftURL" type='text' id="award-name" required autocomplete="off" autofocus>
-    </div>
+    <div @click="joinModalActive = true;" v-if="!isParticipant" style="cursor: pointer;" class="card card-hover">+ Join as Team Captain</div>
+    <Modal title="Join as Team Captain" :fields="['Team name']" :action="join"
+    v-model:active="joinModalActive"></Modal>
+
+    <div @click="addMemberModalActive = true;" v-if="isCaptain" style="cursor: pointer;" class="card card-hover">+ Add a Team Member</div>
+    <Modal title="Add a Team Member" :fields="['Team ID', 'Member address']" :action="addMember"
+      v-model:active="addMemberModalActive"></Modal>
+
+    <div @click="sponsorModalActive = true;" style="cursor: pointer;" class="card card-hover">+ Sponsor an Award</div>
+    <Modal title="Sponsor an Award" :fields="['Award name', 'Award amount (BIT)', 'NFT URI']" :action="sponsor"
+      v-model:active="sponsorModalActive "></Modal>
 
     <h2>Teams</h2>
     <div v-for="team in teams" class="card">
       <span class="index">#{{ team.id }}</span>
-      <span></span>
+      <b style="flex-grow: 1">{{ team.name }}</b>
+      <span v-if="team.isMine">(My team)</span>
+      <span>{{ team.members.length }} members</span>
     </div>
 
     <h2>Awards</h2>
     <div v-for="award in awards" class="card">
       <span class="index">#{{ award.id }}</span>
-      <label> Enter Winning Team ID</label>
-      <input v-model="wteamId" type = 'text' id="award-name" required autocomplete="off" autofocus>
-      <button class = "index" v-if = "award.sponsor == userAddress() || event.organizer == userAddress()" @click = "chooseW(award.id)">Choose Winner</button>
-      <button class = "index" v-if = "teamId == award.sponsorDesignation && teamId == award.organizerDesignation" @click = "claim">Claim Awards</button>
+      <b style="flex-grow: 1">{{ award.name }}</b>
+      <span>Prize: {{ formatEther(award.prize) }}</span>
+      <span>Sponsor: <span class="address">{{ award.sponsor }}</span></span>
+      <a class="link" v-if="award.sponsor == userAddress || event.organizer == userAddress"
+        @click="chooseWinModalActive = true;">Choose Winner</a>
+      <Modal title="Choose a Winning Team" :fields="['Team ID']" :action="teamId => chooseW(award.id, teamId)"
+        v-model:active="chooseWinModalActive"></Modal>
+      <a class="link" v-if="teamId == award.sponsorDesignation && teamId == award.organizerDesignation"
+        @click="claim(award.id, teamId)">Claim Awards</a>
       <span></span>
     </div>
     <div v-if="loading" class="loading"></div>
@@ -39,9 +47,14 @@
 <script>
 import { view_event, view_team_num, view_team, view_award_num, view_award, view_members_num, view_member } from '@/SCinteraction.js';
 import { joinEvent, sponsor, selectWinner, addMember, claimAward, userAddress } from '@/SCinteraction.js';
+import Modal from '@/components/Modal.vue'
+const ethers = require('ethers');
 
 export default {
   name: 'Event',
+  components: {
+    Modal
+  },
   data() {
     return {
       id: 0,
@@ -50,17 +63,24 @@ export default {
       teams: [],
       loading: true,
 
+      userAddress: '',
+
+      joinModalActive: false,
+      addMemberModalActive: false,
+      sponsorModalActive: false,
+      chooseWinModalActive: false,
+
       // TODO
-    
+
       isParticipant: false,
       isCaptain: false,
       teamId: -1
-      
+
     };
   },
   async created() {
-    console.log(await userAddress(), 'ikj')
     this.id = this.$route.params.id;
+    this.userAddress = await userAddress();
     this.event = await view_event(this.id);
     console.log(this.event);
 
@@ -72,10 +92,12 @@ export default {
       const numMembers = (await view_members_num(this.id, i)).toNumber();
       for (let j = 0; j < numMembers; j++) {
         const member = await view_member(this.id, i, j);
-        if(member == await userAddress()){
+        team.isMine = false;
+        if (member === this.userAddress) {
+          team.isMine = true;
           this.isParticipant = true;
           this.teamId = i;
-          if(j == 0){
+          if (j == 0) {
             this.isCaptain = true;
           }
         }
@@ -93,28 +115,31 @@ export default {
       console.log('award', award);
       this.awards.push(award);
     }
-    
+
     this.loading = false;
   },
   methods: {
-    async join() {
+    async join(teamName) {
       //dropdown box
-      await joinEvent(this.id, this.teamName);
+      await joinEvent(this.id, teamName);
     },
-    async sponsor() {
+    async sponsor(awardName, prizeAmount, nftURL) {
       //dropdown box
-      await sponsor(this.id, this.awardName, this.prizeAmount, this.nftURL)
+      await sponsor(this.id, awardName, prizeAmount, nftURL);
     },
     async addMember(teamId, address) {
       // dropdown box
       await addMember(this.id, teamId, address)
-      
+
     },
-    async chooseW(award){
-      await selectWinner(this.id, award, this.wteamId)
+    async chooseW(awardId, teamId) {
+      await selectWinner(this.id, awardId, teamId)
     },
-    async claim(){
-      await claimAward(this.id, award.id, this.teamId)
+    async claim(awardId, teamId) {
+      await claimAward(this.id, awardId, teamId)
+    },
+    formatEther(amount) {
+      return ethers.utils.formatEther(amount) + ' BIT';
     }
   }
 }

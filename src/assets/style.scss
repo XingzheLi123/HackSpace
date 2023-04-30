@@ -39,13 +39,17 @@ a {
     gap: 1em;
     padding: 1em;
     align-items: center;
+
+    .active {
+        background-color: #0001
+    }
 }
 
 .card-hover {
     background: transparent;
     transition: background-color ease 0.5s;
 
-    &:hover {
+    &:hover, &.active {
         background: #0001
     }
 }

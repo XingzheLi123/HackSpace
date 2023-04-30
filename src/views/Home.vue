@@ -11,7 +11,7 @@
     <!-- </router-link> -->
     <a v-if="notConnected" @click="connectWallet" class="link">Connect to Wallet</a>
 
-    <Modal ref="modal" title="Organize an Event" :fields="['Event name']" :action="organizeAction" v-model:active="modalActive"></Modal>
+    <Modal title="Organize an Event" :fields="['Event name']" :action="organizeAction" v-model:active="modalActive"></Modal>
   </div>
 </template>
 

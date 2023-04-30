@@ -35,9 +35,11 @@ export default {
       const values = this.inputs.map(({ value: value }) => value);
       console.log('values',values)
       await this.action(...values);
+      this.deactivate();
     },
     deactivate() {
       this.$emit('update:active', false);
+      console.log('deactivated');
     }
   }
 }
