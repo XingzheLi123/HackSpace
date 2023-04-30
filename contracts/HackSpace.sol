@@ -42,8 +42,8 @@ contract HackSpace {
         bool allowSignup;
     }
 
-    mapping (uint256 => Event) events;
-    uint256 numEvents;
+    mapping (uint256 => Event) public events;
+    uint256 public numEvents;
 
     constructor() {
         owner = payable(msg.sender);
