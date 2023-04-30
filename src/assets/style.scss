@@ -28,19 +28,36 @@ a {
 
 .link {
     border-bottom: 1px solid black;
-    padding-bottom: 3px
+    padding-bottom: 3px;
+    cursor: pointer;
+}
+
+.card {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: 0;
+    gap: 1em;
+    padding: 1em;
+    align-items: center;
 }
 
 .card-hover {
     background: transparent;
     transition: background-color ease 0.5s;
+
     &:hover {
         background: #0001
     }
 }
 
 .index {
-    color: #111;
+    color: #666;
     font-weight: bold;
-    font-size: max(50%, 1rem);
+    font-size: 80%;
+}
+
+.loading {
+    &::after {
+        content: "Loading ..."
+    }
 }

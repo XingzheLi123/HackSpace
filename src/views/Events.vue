@@ -3,14 +3,12 @@
     <h1>Hosted Events</h1>
     <div style="display: flex; flex-direction: column; flex-wrap: 0">
       <router-link v-for="event in events" :to="{ name: 'Event', params: { id: event.id.toNumber() } }">
-        <div style="padding: 1em" class="card-hover">
+        <div class="card card-hover">
           <span class="index">#{{ event.id.toNumber() }}</span>
           <span>{{ event.name }}</span>
         </div>
       </router-link>
-      <div v-if="loading">
-        Loading events...
-      </div>
+      <div v-if="loading" class="loading"></div>
     </div>
   </div>
 </template>
@@ -31,7 +29,7 @@ export default {
     console.log('number of events', numEvents);
 
     this.events.length = 0;
-    for (let i = 0; i < numEvents; i++) {
+    for (let i = 1; i <= numEvents; i++) {
       const event = await view_event(i);
       console.log(event);
       this.events.push(event);

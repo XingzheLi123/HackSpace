@@ -1,9 +1,10 @@
-import { createApp } from "vue";
+import { createApp, Vue } from "vue";
 import App from "./App.vue";
 import router from "./router";
 
-import '@/assets/style.scss'
+import '@/assets/style.scss';
 
 createApp(App)
 .use(router)
-.mount('#app')
+.provide('ethereum', window.ethereum)
+.mount('#app');
