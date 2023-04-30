@@ -3,9 +3,29 @@ pragma solidity ^0.8.9;
 
 // Uncomment this line to use console.log
 // import "hardhat/console.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
-contract HackSpace {
+contract HackSpace is ERC721, ERC721URIStorage{
+
+    //-------------------------------overrides---------------------------------
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (string memory)
+    {
+        return super.tokenURI(tokenId);
+    }
+    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+        super._burn(tokenId);
+    }
+
+    //------------------------------starts here----------------------------------
+
     address public owner;
+    uint256 public totalMints;
+    uint256 public mintPrice = 0;
 
     struct Team {
         string name;
@@ -30,6 +50,7 @@ contract HackSpace {
         bool hasOrganizerDesignated;
         // if the award has been released yet
         bool awarded;
+        string win_nft;
     }
 
     struct Event {
@@ -40,12 +61,13 @@ contract HackSpace {
         address organizer;
         Award[] awards;
         bool allowSignup;
+        //string par_nft;
     }
 
     mapping (uint256 => Event) public events;
     uint256 public numEvents;
 
-    constructor() {
+    constructor() ERC721('HackSpaceToken', 'HST'){
         owner = payable(msg.sender);
         numEvents = 0;
     }
@@ -59,18 +81,18 @@ contract HackSpace {
         e.id = eventId;
         e.organizer = organizer;
         e.allowSignup = false;
+        //e.par_nft = ipfs;
         events[eventId] = e;
         numEvents++;
-
     }
 
-    function addAward(uint256 eventId, string memory name) external payable {
+    function addAward(uint256 eventId, string memory name, string memory ipfs) external payable {
         require(eventId < numEvents, "not a valid eventId");
         Event storage e = events[eventId];
         uint256 awardId = e.awards.length;
         address sponsor = msg.sender;
         uint256 prize = msg.value;
-        Award memory a = Award(name, awardId, prize, sponsor, 0, 0, false, false, false);
+        Award memory a = Award(name, awardId, prize, sponsor, 0, 0, false, false, false, ipfs);
         e.awards.push(a);
     }
 
@@ -90,6 +112,19 @@ contract HackSpace {
         }
     }
 
+    /*function claimParAward(uint256 eventId, uint256 teamId) external{
+        require(eventId < numEvents, "not a valid eventId");
+        Event storage e = events[eventId];
+        require(teamId < e.teams.length, "not a valid teamId");
+        Team storage team = e.teams[teamId];
+
+        for (uint256 i = 0; i < teamSize; i++){
+            _safeMint(team.members[i], totalMints);
+            _setTokenURI(totalMints, e.par_nft);
+            totalMints++;
+        }
+    }*/
+
     function claimAward(uint256 eventId, uint256 awardId, uint256 teamId) external {
         require(eventId < numEvents, "not a valid eventId");
         Event storage e = events[eventId];
@@ -102,15 +137,17 @@ contract HackSpace {
         require(award.organizerDesignation == teamId, "you were not chosen by the organizer");
         require(award.sponsorDesignation == teamId, "you were not chosen by the sponsor");
         require(!award.awarded, "award was already released");
-
-        // release award
-        // note this flag has to be set before any transfers
+        uint256 teamSize = team.members.length;
         award.awarded = true;
 
-        uint256 teamSize = team.members.length;
         uint256 prize = award.prize;
-        for (uint256 i = 0; i < teamSize; i++)
+        for (uint256 i = 0; i < teamSize; i++){
             team.members[i].transfer(prize / teamSize);
+            _safeMint(team.members[i], totalMints);
+            _setTokenURI(totalMints, award.win_nft);
+            totalMints++;
+        }
+        
     }
 
     function joinEvent(uint256 eventId, string memory name) external {
