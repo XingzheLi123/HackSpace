@@ -1,10 +1,14 @@
 const ethers = require('ethers');
 let address = '0x4E195586002b8FB6B21C56D9d46B0022d549F59C';
 import abi from "../artifacts/contracts/HackSpace.sol/HackSpace.json" 
-if (!window.ethereum) alert('no ethereum provider detected')
-const provider = new ethers.providers.Web3Provider(window.ethereum)
-const signer = provider.getSigner(0)
-const contract = new ethers.Contract(address, abi.abi, signer)
+let contract;
+export async function connect(){
+    if (!window.ethereum) alert('no ethereum provider detected')
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    await provider.send('eth_requestAccounts', []);
+    const signer = provider.getSigner(0)
+    contract = new ethers.Contract(address, abi.abi, signer)
+}
 
 export async function addEvent(name){
     const event = await contract.addEvent(name);
