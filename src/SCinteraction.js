@@ -32,7 +32,7 @@ export async function addEvent(name) {
 }
 
 export async function sponsor(eventId, name, amount, url) { //amount in ethers
-    const addAward = await contract.addAward(eventId, name, url, { value: ethers.utils.parseEther(amount) })
+    const addAward = await contract.addAward(eventId, name, url, { value: ethers.utils.parseEther(amount.toString()) })
 }
 export async function selectWinner(eventId, awardId, teamId) {
     const winner = await contract.designateWinner(eventId, awardId, teamId)

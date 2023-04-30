@@ -23,6 +23,15 @@
       <span></span>
     </div>
 
+    <h2>Awards</h2>
+    <div v-for="award in awards" class="card">
+      <span class="index">#{{ award.id }}</span>
+      <label> Enter Winning Team ID</label>
+      <input v-model="wteamId" type = 'text' id="award-name" required autocomplete="off" autofocus>
+      <button class = "index" v-if = "award.sponsor == userAddress() || event.organizer == userAddress()" @click = "chooseW(award.id)">Choose Winner</button>
+      <button class = "index" v-if = "teamId == award.sponsorDesignation && teamId == award.organizerDesignation" @click = "claim">Claim Awards</button>
+      <span></span>
+    </div>
     <div v-if="loading" class="loading"></div>
   </div>
 </template>
@@ -42,8 +51,11 @@ export default {
       loading: true,
 
       // TODO
+    
       isParticipant: false,
-      isCaptain: false
+      isCaptain: false,
+      teamId: -1
+      
     };
   },
   async created() {
@@ -62,6 +74,7 @@ export default {
         const member = await view_member(this.id, i, j);
         if(member == await userAddress()){
           this.isParticipant = true;
+          this.teamId = i;
           if(j == 0){
             this.isCaptain = true;
           }
@@ -73,6 +86,7 @@ export default {
     }
 
     const numAwards = (await view_award_num(this.id)).toNumber();
+    console.log(numAwards)
     this.awards = [];
     for (let i = 0; i < numAwards; i++) {
       const award = await view_award(this.id, i);
@@ -95,6 +109,12 @@ export default {
       // dropdown box
       await addMember(this.id, teamId, address)
       
+    },
+    async chooseW(award){
+      await selectWinner(this.id, award, this.wteamId)
+    },
+    async claim(){
+      await claimAward(this.id, award.id, this.teamId)
     }
   }
 }
