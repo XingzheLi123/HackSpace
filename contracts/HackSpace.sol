@@ -132,4 +132,16 @@ contract HackSpace {
         require(msg.sender == team.members[0], "you are not team leader");
         team.members.push(member);
     }
+    
+    //------------------------------View Functions----------------------------------
+
+    function viewTeam(uint256 eventId, uint256 teamId) external view returns(Team memory){
+        return events[eventId].teams[teamId];
+    }
+    function viewAward(uint256 eventId, uint256 awardId) external view returns(Award memory){
+        return events[eventId].awards[awardId];
+    }
+    function viewMember(uint256 eventId, uint256 teamId, uint256 member_index) external view returns(address payable){
+        return events[eventId].teams[teamId].members[member_index];
+    }
 }

@@ -1,5 +1,5 @@
 const ethers = require('ethers');
-let address = '0x5962c03D09F3AEC67052e40Dde03692DC968358f';
+let address = '0x7c461161da9855FA3037C9D556788bB1580736C6';
 import abi from "../artifacts/contracts/HackSpace.sol/HackSpace.json" 
 if (!window.ethereum) alert('no ethereum provider detected')
 const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -25,10 +25,22 @@ export async function joinEvent(eventId, name){
 export async function addMember(eventId, teamId, newMember_address){
     const add = await contract.addMember(eventId, teamId, newMember_address)
 }
+
+//------------------------------view functions----------------------------------
+
 export async function view_num_of_events(){
     return await contract.numEvents();
 }
 export async function view_event(eventId){
     const event = await contract.events(eventId);
     return event;
+}
+export async function view_team(eventId, teamId){
+    return await contract.viewTeam(eventId, teamId)
+}
+export async function view_award(eventId, awardId){
+    return await contract.viewAward(eventId, awardId)
+}
+export async function view_member(eventId, teamId, member_index){
+    return await contract.viewMember(eventId, teamId, member_index)
 }
