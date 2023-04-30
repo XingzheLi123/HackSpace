@@ -1,5 +1,5 @@
 const ethers = require('ethers');
-let address = '0x4E195586002b8FB6B21C56D9d46B0022d549F59C';
+let address = '0x882139Ce83F155c902180723912E0a896B7a3D12';
 import abi from "../artifacts/contracts/HackSpace.sol/HackSpace.json"
 
 let signer;
