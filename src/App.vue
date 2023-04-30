@@ -13,9 +13,7 @@ export default {
     NavBar
   },
   async created() {
-    if (isConnected()) await connect();
+    if (await isConnected()) await connect();
   }
 }
 </script>
-
-<style scoped></style>

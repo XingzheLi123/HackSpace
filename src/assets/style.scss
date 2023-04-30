@@ -57,6 +57,8 @@ a {
 }
 
 .loading {
+    padding: 1em;
+
     &::after {
         content: "Loading ..."
     }

@@ -17,7 +17,6 @@ export async function isConnected() {
         return false;
     } else {
         const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-        // console.log(accounts.length)
         if (accounts.length > 0) return true;
         else return false;
     }
