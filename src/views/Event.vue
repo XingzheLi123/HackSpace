@@ -6,9 +6,16 @@
     </h1>
     <p>Organizer: <span class="address">{{ event.organizer }}</span></p>
 
-    <div @click="join" v-if="!isParticipant" style="cursor: pointer;" class="card card-hover">+ Join as Team Captain</div>
+    <div @click="join" v-if="!isParticipant" style="cursor: pointer;" class="card card-hover">+ Join as Team Captain, Enter Team Name
+      <input v-model="teamName" type="text" id="team-name" required autocomplete="off" autofocus></div>
     <div @click="addMember" v-if="isCaptain" style="cursor: pointer;" class="card card-hover">+ Add a Team Member</div>
-    <div @click="sponsor" style="cursor: pointer;" class="card card-hover">+ Sponsor an Award</div>
+    <div @click="sponsor" style="cursor: pointer;" class="card card-hover">+ Sponsor an Award, enter Award Name
+      <input v-model="awardName" type="text" id="award-name" required autocomplete="off" autofocus>
+      <label for = 'awardName'>Prize Amount</label>
+      <input v-model="prizeAmount" type='int' id="award-name" required autocomplete="off" autofocus>
+      <label for = 'awardName'>NFT URL</label>
+      <input v-model="nftURL" type='text' id="award-name" required autocomplete="off" autofocus>
+    </div>
 
     <h2>Teams</h2>
     <div v-for="team in teams" class="card">
@@ -22,7 +29,7 @@
 
 <script>
 import { view_event, view_team_num, view_team, view_award_num, view_award, view_members_num, view_member } from '@/SCinteraction.js';
-import { joinEvent, sponsor, selectWinner, addMember, claimAward } from '@/SCinteraction.js';
+import { joinEvent, sponsor, selectWinner, addMember, claimAward, userAddress } from '@/SCinteraction.js';
 
 export default {
   name: 'Event',
@@ -40,6 +47,7 @@ export default {
     };
   },
   async created() {
+    console.log(await userAddress(), 'ikj')
     this.id = this.$route.params.id;
     this.event = await view_event(this.id);
     console.log(this.event);
@@ -52,7 +60,12 @@ export default {
       const numMembers = (await view_members_num(this.id, i)).toNumber();
       for (let j = 0; j < numMembers; j++) {
         const member = await view_member(this.id, i, j);
-        //
+        if(member == await userAddress()){
+          isParticipant = true;
+          if(j == 0){
+            isCaptain = true;
+          }
+        }
         team.members.push(member);
       }
       console.log('team', team);
@@ -71,13 +84,17 @@ export default {
   },
   methods: {
     async join() {
-      await joinEvent(this.id, /* TODO */ 'team123');
+      //dropdown box
+      await joinEvent(this.id, this.teamName);
     },
     async sponsor() {
-      // TODO
+      //dropdown box
+      await joinEvent(this.id, this.awardName, this.prizeAmount, this.nftURL)
     },
-    async addMember() {
-      // TODO
+    async addMember(teamId, address) {
+      // dropdown box
+      await addMember(this.id, teamId, address)
+      
     }
   }
 }

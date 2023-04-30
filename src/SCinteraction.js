@@ -2,13 +2,14 @@ const ethers = require('ethers');
 let address = '0x4E195586002b8FB6B21C56D9d46B0022d549F59C';
 import abi from "../artifacts/contracts/HackSpace.sol/HackSpace.json"
 
+let signer;
 let contract;
 
 export async function connect() {
     if (!window.ethereum) alert('no ethereum provider detected')
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     await provider.send('eth_requestAccounts', []);
-    const signer = provider.getSigner(0)
+    signer = provider.getSigner(0)
     contract = new ethers.Contract(address, abi.abi, signer)
 }
 
@@ -20,6 +21,10 @@ export async function isConnected() {
         if (accounts.length > 0) return true;
         else return false;
     }
+}
+
+export async function userAddress(){
+    return await signer.getAddress()
 }
 
 export async function addEvent(name) {
@@ -69,4 +74,5 @@ export async function view_award_num(eventId) {
 export async function view_members_num(eventId, teamId) {
     return await contract.viewMembersNum(eventId, teamId)
 }
+
 
