@@ -144,4 +144,13 @@ contract HackSpace {
     function viewMember(uint256 eventId, uint256 teamId, uint256 member_index) external view returns(address payable){
         return events[eventId].teams[teamId].members[member_index];
     }
+    function viewTeamsNum(uint256 eventId) external view returns(uint256){
+        return events[eventId].teams.length;
+    }
+    function viewAwardsNum(uint256 eventId) external view returns(uint256){
+        return events[eventId].awards.length;
+    }
+    function viewMembersNum(uint256 eventId, uint256 teamId) external view returns(uint256){
+        return events[eventId].teams[teamId].members.length;
+    }
 }

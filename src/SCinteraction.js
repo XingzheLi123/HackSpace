@@ -44,3 +44,13 @@ export async function view_award(eventId, awardId){
 export async function view_member(eventId, teamId, member_index){
     return await contract.viewMember(eventId, teamId, member_index)
 }
+export async function view_team_num(eventId){
+    return await contract.viewTeamsNum(eventId)
+}
+export async function view_award_num(eventId){
+    return await contract.viewAwardsNum(eventId)
+}
+export async function view_members_num(eventId, teamId){
+    return await contract.viewMembersNum(eventId, teamId)
+}
+
