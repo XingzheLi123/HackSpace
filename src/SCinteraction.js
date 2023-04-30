@@ -1,6 +1,6 @@
 const ethers = require('ethers');
-let address = 0x5962c03D09F3AEC67052e40Dde03692DC968358f;
-import hackspace_abi from "../artifacts/contracts/HackSpace.json" 
+let address = '0x5962c03D09F3AEC67052e40Dde03692DC968358f';
+import abi from "../artifacts/contracts/HackSpace.sol/HackSpace.json" 
 if (!window.ethereum) alert('no ethereum provider detected')
 const provider = new ethers.providers.Web3Provider(window.ethereum)
 const signer = provider.getSigner(0)

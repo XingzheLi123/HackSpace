@@ -1,15 +1,15 @@
 import { createWebHistory, createRouter } from "vue-router"
 
 import Home from "../views/Home.vue";
-import Organizer from "../views/Organizer.vue";
-import Participant from "../views/Participant.vue";
-import Sponsor from "../views/Sponsor.vue";
+import Organize from "../views/Organize.vue";
+import Events from "../views/Events.vue";
+import Event from "../views/Event.vue";
 
 const routes = [
   { path: "/", name: "Home", component: Home },
-  { path: "/organizer", name: "Organizer", component: Organizer },
-  { path: "/participant", name: "Participant", component: Participant },
-  { path: "/sponsor", name: "Sponsor", component: Sponsor },
+  { path: "/organize", name: "Organize", component: Organize },
+  { path: "/events", name: "Events", component: Events },
+  { path: "/event/:id", name: "Event", component: Event },
 ];
 
 const router = createRouter({
