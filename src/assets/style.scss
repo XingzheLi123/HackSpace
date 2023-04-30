@@ -11,7 +11,7 @@ body {
 }
 
 .mono {
-    font-family: monospace
+    font-family: Hack, monospace
 }
 
 a {
@@ -62,4 +62,8 @@ a {
     &::after {
         content: "Loading ..."
     }
+}
+
+.address {
+    font-family: Hack, monospace;
 }
