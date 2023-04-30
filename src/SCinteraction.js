@@ -30,4 +30,5 @@ export async function view_num_of_events(){
 }
 export async function view_event(eventId){
     const event = await contract.events(eventId);
+    return event;
 }

@@ -1,27 +1,43 @@
 <template>
   <div style="margin: 3em">
     <h1>Hosted Events</h1>
-    <div>
-      <div v-for="i in numEvents">
-        <router-link :to="{ name: 'Event', params: { id: i - 1 } }">Event {{ i - 1 }}</router-link>
+    <div style="display: flex; flex-direction: column; flex-wrap: 0">
+      <router-link v-for="event in events" :to="{ name: 'Event', params: { id: event.id.toNumber() } }">
+        <div style="padding: 1em" class="card-hover">
+          <span class="index">#{{ event.id.toNumber() }}</span>
+          <span>{{ event.name }}</span>
+        </div>
+      </router-link>
+      <div v-if="loading">
+        Loading events...
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { view_num_of_events } from '@/SCinteraction.js'
+import { view_num_of_events, view_event } from '@/SCinteraction.js'
 
 export default {
   name: 'Events',
   data() {
     return {
-      numEvents: 0
+      events: [],
+      loading: true
     }
   },
   async created() {
-    this.numEvents = (await view_num_of_events()).toNumber();
-    console.log('number of events', this.numEvents)
+    const numEvents = (await view_num_of_events()).toNumber();
+    console.log('number of events', numEvents);
+
+    this.events.length = 0;
+    for (let i = 0; i < numEvents; i++) {
+      const event = await view_event(i);
+      console.log(event);
+      this.events.push(event);
+    }
+
+    this.loading = false;
   }
 }
 </script>

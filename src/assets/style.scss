@@ -30,3 +30,17 @@ a {
     border-bottom: 1px solid black;
     padding-bottom: 3px
 }
+
+.card-hover {
+    background: transparent;
+    transition: background-color ease 0.5s;
+    &:hover {
+        background: #0001
+    }
+}
+
+.index {
+    color: #111;
+    font-weight: bold;
+    font-size: max(50%, 1rem);
+}
